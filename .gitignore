@@ -1,0 +1,69 @@
+# Dependencies
+node_modules
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Build output
+dist
+build
+*.tsbuildinfo
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache directory
+.eslintcache
+
+# Optional vscode settings that should not be committed
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/settings.json
+!.vscode/tasks.json
+
+# OS-specific
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+pagefile.sys
+hiberfil.sys
+swapfile.sys
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Portable runtime
+/.cache
+/.node-gyp
+/.python-version
+
+# IDE directories
+.idea
+.project
+.classpath
+.cproject
+.settings
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Other
+*.log
+*.tmp
+*~
