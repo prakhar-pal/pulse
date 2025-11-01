@@ -1,0 +1,31 @@
+{
+  "name": "reactive-frontend-library",
+  "version": "1.0.0",
+  "description": "A lightweight reactive frontend library with fine-grained reactivity",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/**/*.test.js",
+    "dev": "node examples/dev-server.js",
+    "build": "echo 'Build script placeholder'",
+    "lint": "echo 'Lint script placeholder'"
+  },
+  "keywords": [
+    "reactive",
+    "frontend",
+    "signals",
+    "computed",
+    "effects",
+    "components",
+    "router",
+    "javascript",
+    "proxy",
+    "fine-grained"
+  ],
+  "author": "Reactive Library Team",
+  "license": "MIT",
+  "devDependencies": {},
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
