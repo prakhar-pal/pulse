@@ -38,7 +38,7 @@
     - Add support for both primitive and object values
     - _Requirements: 1.1, 1.2, 1.3, 1.4_
 
-  - [ ] 3.3 Add subscription management methods
+  - [x] 3.3 Add subscription management methods
     - Implement internal subscribe/unsubscribe methods
     - Add cleanup functionality for disposed signals
     - Handle multiple signal dependency tracking
