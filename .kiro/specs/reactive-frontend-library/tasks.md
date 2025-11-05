@@ -13,13 +13,13 @@
     - Add batching mechanism for update optimization
     - _Requirements: 1.2, 1.3, 8.5_
 
-  - [ ] 2.2 Implement track and trigger methods
+  - [x] 2.2 Implement track and trigger methods
     - Code dependency registration during reactive reads
     - Implement update triggering when reactive values change
     - Add circular dependency detection and prevention
     - _Requirements: 1.2, 1.3, 2.5_
 
-  - [ ] 2.3 Write unit tests for dependency tracking
+  - [x] 2.3 Write unit tests for dependency tracking
     - Test dependency registration and cleanup
     - Test circular dependency detection
     - Test batching behavior
@@ -32,7 +32,7 @@
     - Use private class fields for encapsulation
     - _Requirements: 1.1, 1.4, 7.1_
 
-  - [ ] 3.2 Implement reactive getter and setter
+  - [x] 3.2 Implement reactive getter and setter
     - Code getter that registers dependencies with tracker
     - Implement setter that triggers subscriber updates
     - Add support for both primitive and object values

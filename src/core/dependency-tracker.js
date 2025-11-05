@@ -80,7 +80,12 @@ export class DependencyTracker {
       this.#pendingUpdates.add(updateFn)
     } else {
       // Execute immediately if not batching
-      updateFn()
+      try {
+        updateFn()
+      } catch (error) {
+        console.error('Error in reactive update:', error)
+        // Continue execution even if update fails
+      }
     }
   }
 
@@ -173,21 +178,142 @@ export class DependencyTracker {
   }
 
   /**
-   * Track dependency during reactive reads (placeholder)
+   * Check if a target/key combination has any subscribers
+   * @param {Object} target - The reactive target
+   * @param {string|symbol} key - The property key
+   * @returns {boolean} True if there are subscribers
+   */
+  hasSubscribers(target, key) {
+    const dependencies = this.#dependencies.get(target)
+    if (!dependencies) {
+      return false
+    }
+    const subscribers = dependencies.get(key)
+    return subscribers && subscribers.size > 0
+  }
+
+  /**
+   * Track dependency during reactive reads
+   * Registers the current execution context as a subscriber to the target property
    * @param {Object} target - The reactive target
    * @param {string|symbol} key - The property key
    */
   track(target, key) {
-    // Implementation will be added in task 2.2
+    const context = this.getCurrentContext()
+    if (!context) {
+      // No active tracking context
+      return
+    }
+
+    // Get or create dependencies map for this target
+    const dependencies = this.getDependencies(target)
+    
+    // Get or create subscribers set for this property
+    if (!dependencies.has(key)) {
+      dependencies.set(key, new Set())
+    }
+    const subscribers = dependencies.get(key)
+    
+    // Add current context as subscriber
+    subscribers.add(context)
+    
+    // Also track in reverse direction for cleanup
+    const contextDeps = this.getSubscribers(context)
+    if (!contextDeps.has(target)) {
+      contextDeps.set(target, new Set())
+    }
+    contextDeps.get(target).add(key)
   }
 
   /**
-   * Trigger updates when reactive values change (placeholder)
+   * Trigger updates when reactive values change
+   * Notifies all subscribers of the target property about the change
    * @param {Object} target - The reactive target
    * @param {string|symbol} key - The property key
    */
   trigger(target, key) {
-    // Implementation will be added in task 2.2
+    const dependencies = this.#dependencies.get(target)
+    if (!dependencies) {
+      // No dependencies tracked for this target
+      return
+    }
+
+    const subscribers = dependencies.get(key)
+    if (!subscribers || subscribers.size === 0) {
+      // No subscribers for this property
+      return
+    }
+
+    // Check for circular dependencies
+    if (this.#detectCircularDependency(target, key)) {
+      throw new Error(`Circular dependency detected for ${target.constructor.name}.${String(key)}`)
+    }
+
+    // Collect all update functions to execute
+    const updates = []
+    for (const subscriber of subscribers) {
+      if (subscriber && typeof subscriber.update === 'function') {
+        updates.push(() => subscriber.update())
+      }
+    }
+
+    // Execute updates (with batching if active)
+    for (const update of updates) {
+      this.queueUpdate(update)
+    }
+  }
+
+  /**
+   * Detect circular dependencies to prevent infinite loops
+   * @param {Object} target - The reactive target
+   * @param {string|symbol} key - The property key
+   * @returns {boolean} True if circular dependency detected
+   */
+  #detectCircularDependency(target, key) {
+    // Simple circular dependency detection:
+    // Check if any context in the execution stack is already being updated
+    // by this same target/key combination
+    for (const context of this.#executionStack) {
+      if (context.target === target && context.key === key) {
+        return true
+      }
+    }
+    return false
+  }
+
+  /**
+   * Clean up dependencies for a specific context
+   * @param {Object} context - The context to clean up
+   */
+  cleanupContext(context) {
+    const contextDeps = this.#subscribers.get(context)
+    if (!contextDeps) {
+      return
+    }
+
+    // Remove context from all its dependencies
+    for (const [target, keys] of contextDeps) {
+      const dependencies = this.#dependencies.get(target)
+      if (dependencies) {
+        for (const key of keys) {
+          const subscribers = dependencies.get(key)
+          if (subscribers) {
+            subscribers.delete(context)
+            // Clean up empty subscriber sets
+            if (subscribers.size === 0) {
+              dependencies.delete(key)
+            }
+          }
+        }
+        // Clean up empty dependency maps
+        if (dependencies.size === 0) {
+          this.#dependencies.delete(target)
+        }
+      }
+    }
+
+    // Remove the context's subscriber tracking
+    this.#subscribers.delete(context)
   }
 }
 
